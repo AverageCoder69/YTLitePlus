@@ -54,7 +54,7 @@ concurrency:
 jobs:
   build:
     name: Build YTLitePlus
-    runs-on: macos-latest
+    runs-on: macos-15
     permissions:
       contents: write
 
@@ -65,6 +65,14 @@ jobs:
           path: main
           ref: ${{ github.event.inputs.commit_id || github.ref }}
           submodules: recursive
+
+      # --- FIX AJOUTÉ ICI ---
+      - name: Replace YTUHD with Fixed Version
+        run: |
+          echo "Replacing broken YTUHD with Tonwalter888 version..."
+          rm -rf main/Tweaks/YTUHD
+          git clone https://github.com/Tonwalter888/YTUHD main/Tweaks/YTUHD
+      # ----------------------
 
       - name: Install Dependencies
         run: brew install ldid dpkg make
