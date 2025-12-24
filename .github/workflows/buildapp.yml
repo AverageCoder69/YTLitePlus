@@ -66,13 +66,13 @@ jobs:
           ref: ${{ github.event.inputs.commit_id || github.ref }}
           submodules: recursive
 
-      # --- FIX AJOUTÉ ICI ---
+      # --- FIX 1 : Remplacement de YTUHD ---
       - name: Replace YTUHD with Fixed Version
         run: |
           echo "Replacing broken YTUHD with Tonwalter888 version..."
           rm -rf main/Tweaks/YTUHD
           git clone https://github.com/Tonwalter888/YTUHD main/Tweaks/YTUHD
-      # ----------------------
+      # -------------------------------------
 
       - name: Install Dependencies
         run: brew install ldid dpkg make
@@ -175,6 +175,13 @@ jobs:
         id: build_package
         run: |
           cd ${{ github.workspace }}/main
+          
+          # --- FIX 2 : Correction erreur de type GestureMode ---
+          # Force le cast des entiers vers GestureMode pour le compilateur strict
+          sed -i '' 's/sectionGestureSelectedModeToString(idx)/sectionGestureSelectedModeToString((GestureMode)idx)/g' Source/Settings.xm
+          sed -i '' 's/sectionGestureSelectedModeToString(GetInteger(sectionKey))/sectionGestureSelectedModeToString((GestureMode)GetInteger(sectionKey))/g' Source/Settings.xm
+          # -----------------------------------------------------
+
           # Replace lines in Makefile based on inputs
           sed -i '' "s/^BUNDLE_ID.*$/BUNDLE_ID = ${{ env.BUNDLE_ID }}/" Makefile
           sed -i '' "s/^DISPLAY_NAME.*$/DISPLAY_NAME = ${{ env.APP_NAME }}/" Makefile
